@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html ng-app="homeApp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Visminer Dashboard</title>
+    <base href="/visminer-dashboard/"></base>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/ionicons.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="assets/css/AdminLTE.css">
+    <link rel="stylesheet" href="assets/css/skins/skin-blue.min.css">
+    <link rel="stylesheet" href="assets/plugins/iCheck/flat/blue.css">
+    <link rel="stylesheet" href="assets/plugins/datepicker/datepicker3.css">
+    <link rel="stylesheet" href="assets/plugins/daterangepicker/daterangepicker-bs3.css">
+    <link rel="stylesheet" href="assets/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+    <link rel="stylesheet" href="assets/plugins/jQDateRangeSlider/css/classic-min.css">
+    <link rel="stylesheet" href="app/bower_components/angularjs-slider/dist/rzslider.css"/>
+    <link rel="stylesheet" href="assets/plugins/select2/select2.css">
+    <link rel="stylesheet" href="assets/css/visminer-td.css">
+  </head>
+
+  <body class="hold-transition skin-blue sidebar-mini" ng-controller="HomeCtrl as ctrl">
+    <div class="wrapper">
+
+      <div ng-include="'app/shared/navbar/navbar.html'"></div>
+	  
+	    <div ng-include="'app/shared/sidebar/sidebar.html'"></div>  
+	  
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <div ng-show="repositories.length == 0">
+          <section class="content">
+            <div class="alert alert-warn-vmtd alert-dismissable">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              <h4>Welcome</h4>
+                Please, select the option to mine your first repository at the top right corner.
+            </div>
+          </section>
+        </div>
+        <div ng-show="repositories.length > 0 && filtered.repository==null">
+          <section class="content">
+            <div class="alert alert-warn-vmtd alert-dismissable">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              <h4>Welcome</h4>
+                <i class="icon fa fa-hand-o-left"></i>Please, select a repository in the left menu.
+            </div>
+          </section>
+        </div>
+
+        <div ng-view></div>
+
+      </div><!-- /.content-wrapper -->
+
+      <footer class="main-footer text-center">
+        <strong style="color: rgb(110, 114, 116)">Visminer Dashboard - 2016</strong>
+      </footer>
+
+    </div><!-- ./wrapper -->
+
+    <!-- components -->
+    <alert-modal></alert-modal>
+    <progress-bar></progress-bar>
+    <type-smells></type-smells>
+    <td-timeline></td-timeline>
+    <miner-modal></miner-modal>
+    <!-- /components -->
+    
+    <script src="assets/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <script src="assets/js/jquery-ui.min.js"></script>
+    <script>
+      $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/bootstrap-select.min.js"></script>
+    <script src="assets/plugins/sparkline/jquery.sparkline.min.js"></script>
+    <script src="assets/plugins/knob/jquery.knob.js"></script>
+    <script src="assets/plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="assets/plugins/datepicker/bootstrap-datepicker.js"></script>
+    <script src="assets/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+    <script src="assets/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+    <script src="assets/plugins/fastclick/fastclick.min.js"></script>
+    <script src="assets/js/app.min.js"></script>
+    <script src="app/bower_components/angular/angular.js"></script>
+    <script src="app/bower_components/ngstorage/ngStorage.js"></script>
+    <script src="app/bower_components/angularjs-slider/dist/rzslider.min.js"></script>
+    <script src="app/bower_components/highcharts-ng/dist/highcharts-ng.min.js"></script>
+    <script src="app/bower_components/moment/moment.js"></script>
+    <script src="http://code.highcharts.com/highcharts.src.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-route.min.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="assets/plugins/jQDateRangeSlider/jQDateRangeSlider-min.js"></script>
+    <script src="assets/plugins/select2/select2.full.min.js"></script>
+    <script src="assets/js/ui-bootstrap-1.0.0.min.js"></script>
+    <script src="app/bower_components/angularjs-slider/demo/lib/ui-bootstrap-tpls.js"></script>
+
+    <!-- APP imports -->
+    <script src="app/app.module.js"></script>
+    <script src="app/app.routes.js"></script>
+    <script src="app/shared/sidebar/sidebar.service.js"></script>
+    <script src="app/app.ctrl.js"></script>
+    <script src="app/technicaldebt/tdevolution/tdevolution.ctrl.js"></script>
+    <script src="app/technicaldebt/tdmanagement/tdmanagement.ctrl.js"></script>
+    <script src="app/technicaldebt/tdanalyzer/tdanalyzer.ctrl.js"></script>
+    <script src="app/technicaldebt/tdcommitters/tdcommitters.ctrl.js"></script>
+    <script src="app/technicaldebt/csgraphs/csgraphs.ctrl.js"></script>
+    <script src="assets/js/center-modal.js"></script>
+    <script src="assets/js/checklist-model.js"></script>
+    <script src="app/components/alert-modal/alertModal.service.js"></script>
+    <script src="app/components/alert-modal/alertModal.js"></script>
+    <script src="app/components/progressbar/progressbar.service.js"></script>
+    <script src="app/components/progressbar/progressbar.js"></script>
+    <script src="app/components/type-smells-details/type-smells-details.service.js"></script>
+    <script src="app/components/type-smells-details/type-smells-details.js"></script>
+    <script src="app/components/td-timeline/td-timeline.service.js"></script>
+    <script src="app/components/td-timeline/td-timeline.js"></script>
+    <script src="app/components/miner-modal/miner-modal.js"></script>
+    <script src="app/components/td-indicators-charts/td-indicators-charts.service.js"></script>
+    <script src="app/components/td-indicators-charts/td-indicators-charts.js"></script>
+  </body>
+</html>

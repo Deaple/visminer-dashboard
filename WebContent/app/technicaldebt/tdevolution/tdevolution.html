@@ -1,0 +1,46 @@
+<div ng-show="filtered.repository != null && currentPage == 'tdevolution'">
+    
+    <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div style="font-size: 22px">
+    	<i class="fa fa-database" style="font-size: 20px"></i>
+      {{filtered.repository.name}}
+    </div>
+
+    <ol class="breadcrumb">
+      <li class="active"><i class="fa fa-line-chart"></i> TD Evolution</li>
+    </ol>
+  </section>
+
+  <!-- Main content -->
+  <section class="content" style="padding-top: 10px">
+
+      <div  style="padding-bottom: 15px;">
+         <rzslider id="slider-versions" rz-slider-model="slider.minValue" rz-slider-high="slider.maxValue" rz-slider-options="slider.options">
+         </rzslider>
+      </div>
+
+      <div ng-include="'app/technicaldebt/tdevolution/small-boxes.html'"></div>  
+
+      <div>
+        <highchart id="stacked-column-chart" config="chartConfig"></highchart>
+      </div>
+
+  </section><!-- /.content -->
+
+</div>
+
+<script type="text/javascript">
+  $( document ).ready(function() {
+    var width = $("#slider-versions").width();
+    $("#stacked-column-chart").width(width-13);
+  });
+
+  window.addEventListener("resize", resizeChart);
+
+  function resizeChart() {
+    var width = $("#slider-versions").width();
+    $("#stacked-column-chart").width(width);
+  }
+  
+</script>

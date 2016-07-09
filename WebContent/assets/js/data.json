@@ -1,0 +1,288 @@
+{
+	"codeSmells": [
+		{
+			"name": "Comments",
+			"description": "There's a fine line between comments that illuminate and comments that obscure. Are the comments necessary? Do they explain \"why\" and not \"what\"? Can you refactor the code so the comments aren't required? And recommiter, you're writing comments for people, not machines."
+		},{
+			"name": "Long Method",
+			"description": "All other things being equal, a shorter method is easier to read, easier to understand, and easier to troubleshoot. Refactor long methods into smaller methods if you can."
+		},{
+			"name": "Long Parameter List",
+			"description": "The more parameters a method has, the more complex it is. Limit the number of parameters you need in a given method, or use an object to combine the parameters."
+		},{
+			"name": "Duplicated code",
+			"description": "Duplicated code is the bane of software development. Stamp out duplication whenever possible. You should always be on the lookout for more subtle cases of near-duplication, too."
+		},{
+			"name": "Large Class",
+			"description": "Large classes, like long methods, are difficult to read, understand, and troubleshoot."
+		},{
+			"name": "Dead Code",
+			"description": "Ruthlessly delete code that isn't being used. "
+		}
+	],
+	"projects": [
+		{
+			"name": "1",
+			"commits": [
+				{
+					"date": "2014-02-01 10:00:00",
+					"commiter": "amandaferraz@gmail.com",
+					"desc": "teset",
+					"classes": [
+						{
+							"file": "path/ClassA",
+							"lines": 22,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": 42
+								},{
+									"name": "Large Class",
+									"qtty": 1
+								}
+							]
+						},{
+							"file": "path/ClassB",
+							"lines": 34,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": -5
+								}
+							]
+						},{
+							"file": "path/ClassC",
+							"lines": 566,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": 2
+								},{
+									"name": "Large Class",
+									"qtty": -1
+								}
+							]
+						}
+					]
+				},
+				{
+					"date": "2014-03-01 10:00:00",
+					"commiter": "andersoncunha@gmail.com",
+					"desc": "teset",
+					"classes": [
+						{
+							"file": "path/ClassD",
+							"lines": 23,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": -4
+								}
+							]
+						},{
+							"file": "path/ClassE",
+							"lines": 412,
+							"codeSmells": []
+						},{
+							"file": "path/ClassF",
+							"lines": 113,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": -7
+								},{
+									"name": "Large Class",
+									"qtty": -1
+								}
+							]
+						}
+					]
+				},
+				{
+					"date": "2014-05-01 10:00:00",
+					"commiter": "andersoncunha@gmail.com",
+					"desc": "teset",
+					"classes": [
+						{
+							"file": "path/ClassD",
+							"lines": 11,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": 4
+								}
+							]
+						},{
+							"file": "path/ClassE",
+							"lines": 234,
+							"codeSmells": []
+						},{
+							"file": "path/ClassF",
+							"lines": 324,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": 7
+								},{
+									"name": "Large Class",
+									"qtty": -1
+								}
+							]
+						}
+					]
+				},
+				{
+					"date": "2015-11-01 10:00:00",
+					"commiter": "andersoncunha@gmail.com",
+					"desc": "teset",
+					"classes": [
+						{
+							"file": "path/ClassA",
+							"lines": 4432,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": 8
+								},{
+									"name": "Large Class",
+									"qtty": 1
+								}
+							]
+						},{
+							"file": "path/ClassB",
+							"lines": 533,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": 1
+								},{
+									"name": "Large Class",
+									"qtty": -1
+								}
+							]
+						},{
+							"file": "path/ClassC",
+							"lines": 234,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": 14
+								},{
+									"name": "Large Class",
+									"qtty": 1
+								}
+							]
+						}
+					]
+				},
+				{
+					"date": "2015-12-30 20:00:00",
+					"commiter": "danielalmeida@gmail.com",
+					"desc": "teset",
+					"classes": [
+						{
+							"file": "path/ClassA",
+							"lines": 22,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": 24
+								},{
+									"name": "Large Class",
+									"qtty": 1
+								}
+							]
+						},{
+							"file": "path/ClassB",
+							"lines": 34,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": 12
+								},{
+									"name": "Large Class",
+									"qtty": 1
+								}
+							]
+						},{
+							"file": "path/ClassC",
+							"lines": 566,
+							"codeSmells": [
+								{
+									"name": "Dead Code",
+									"qtty": 9
+								},{
+									"name": "Large Class",
+									"qtty": 1
+								}
+							]
+						}
+					]
+				}
+			],
+			"commiters": [
+				{
+					"name": "Rodrigo Oliveira",
+					"email": "rodrigooliveira@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2014/09/RodrigoSpinolatemp2-150x150.jpg"
+				},{
+					"name": "Manoel Mendonça",
+					"email": "manoelmendonca@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2014/09/ManoelMendonca1-133x150.jpg"
+				},{
+					"name": "Renato Novais",
+					"email": "renatonovais@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2014/09/RenatoNovais-150x150.jpg"
+				},{
+					"name": "Mário André",
+					"email": "marioandre@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2014/09/AndreFarias-150x150.jpg"
+				},{
+					"name": "Thiago Souto",
+					"email": "thiagosouto@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2014/09/thiagomendes-150x150.jpg"
+				},{
+					"name": "Amanda Ferraz",
+					"email": "amandaferraz@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2015/11/tdrt_amanda.jpg"
+				},{
+					"name": "Anderson Cunha",
+					"email": "andersoncunha@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2015/11/tdrt_anderson.jpg"
+				},{
+					"name": "Leilane Ferreira",
+					"email": "leilane@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2014/09/LEILANE-FERREIRA-150x150.jpg"
+				},{
+					"name": "Nicolli Souza",
+					"email": "nicollisouza@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2014/09/NicolliRios1-150x150.jpg"
+				},{
+					"name": "Ricardo Porto",
+					"email": "ricardoporto@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2015/11/tdrt_ricardo.jpg"
+				},{
+					"name": "Sandro Campos",
+					"email": "sandrocampos@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2015/11/tdrt_sandro.jpg"
+				},{
+					"name": "Vivyane Caires",
+					"email": "vivyanecaires@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2014/09/VivyaneCaires-e1410544062925-150x150.jpg"
+				},{
+					"name": "Rodrigo Silva",
+					"email": "rodrigosilva@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2014/09/rodrigoaraujofinal-150x150.jpg"
+				},{
+					"name": "Daniel Almeida",
+					"email": "danielalmeida@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2014/09/dainelalmeida-150x150.jpg"
+				},{
+					"name": "Henrique Soares",
+					"email": "henriquesoares@gmail.com",
+					"avatar": "http://www.tdresearchteam.com/wp-content/uploads/2014/09/Henrique-F-Soares-150x150.jpg"
+				}
+			]
+		}
+	]
+}

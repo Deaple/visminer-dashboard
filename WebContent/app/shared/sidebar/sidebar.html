@@ -1,0 +1,192 @@
+<!-- Left side column. contains the logo and sidebar -->
+<aside class="main-sidebar">
+  <!-- sidebar: style can be found in sidebar.less -->
+  <section class="sidebar">
+    <!-- sidebar menu: : style can be found in sidebar.less -->
+    <ul class="sidebar-menu">
+      <li class="header filter-header">FILTER</li>
+      <li class="treeview">
+        <a href="#">
+          <i class="fa fa-dashboard"></i> 
+          <span>Dashboard</span> 
+          <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu">
+          <li>
+            <a href="#" ng-click="ctrl.analyzeDebts()">
+              <i class="fa fa-circle-o"></i> TD Analyzer
+            </a>
+          </li>
+          <li class="active">
+            <a href="tdevolution" ng-click="ctrl.selectView('tdevolution')">
+              <i class="fa fa-circle-o"></i> TD Evolution
+            </a>
+          </li>
+          <li class="active">
+            <a href="tdmanagement" ng-click="ctrl.selectView('tdmanagement')">
+              <i class="fa fa-circle-o"></i> TD Management
+            </a>
+          </li>
+          <li>
+            <a href="tdcommitters" ng-click="ctrl.selectView('tdcommiters')">
+              <i class="fa fa-circle-o"></i> TD Committers
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="treeview">
+        <a href="#">
+          <i class="fa fa-database"></i> <span>Repositories</span>
+          <small class="label pull-right bg-green">{{repositories.length}}</small>
+        </a>
+        <ul class="treeview-menu">
+          <li ng-repeat="repository in repositories | orderBy:'name'">
+            <a href="javascript:void(0)" ng-click="ctrl.selectRepository(repository)">
+              <i class="fa fa-caret-right"></i> {{repository.name}}
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="treeview">
+        <a href="#">
+          <i class="fa fa-tags"></i> <span>Versions</span>
+          <small class="label pull-right bg-green" ng-hide="tags.length==0">{{filtered.tags.length}}/{{tags.length}}</small>
+          <small class="label pull-right bg-green" ng-show="tags.length==0">{{tags.length}}</small>
+        </a>
+        <ul class="treeview-menu">
+          <li ng-repeat="tag in tags">
+            <label class="control-sidebar-subheading filter-version-sub-item">
+              <input type="checkbox" checklist-model="filtered.tags" checklist-value="tag">{{tag.name}}
+            </label>
+          </li>
+        </ul>
+      </li>
+      <li class="treeview" ng-show="currentPage == 'committers'">
+        <a href="#">
+          <i class="fa fa-users"></i>
+          <span>Committers</span>
+          <small class="label pull-right bg-green">{{filtered.committers.length}}</small>
+        </a>
+        <ul class="treeview-menu">
+          <li ng-repeat="committer in filtered.committers | orderBy:'message'">
+            <a href="javascript:void(0)">
+              <i class="fa fa-caret-right"></i> {{committer.message}}
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="treeview" ng-show="currentPage == 'commiters'">
+        <a href="#">
+          <i class="fa fa-book"></i> <span>Documentation</span>
+          <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu">
+          <li>
+            <a href="#">
+              <i class="fa fa-caret-right"></i> Code Smells <i class="fa fa-angle-right pull-right"></i>
+            </a>
+            <ul ng-repeat="codeSmell in codeSmellsAll | orderBy:'name'" class="treeview-menu">
+              <li><a href="#"><i class="fa fa-caret-right"></i> {{codeSmell.name}}</a></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li class="treeview">
+        <a href="#">
+          <i class="fa fa-line-chart"></i> <span>TD Indicators</span>
+          <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu">
+          <li>
+            <a href="#"><i class="fa fa-circle-o"></i>God Class<i class="fa fa-angle-left pull-right"></i></a>
+            <ul class="treeview-menu">
+              <div>
+                <label class="label-indicator">WMC: </label>
+                <input class="input-indicator" type="text" value="47"></input>
+              </div>
+              <div>
+                <label class="label-indicator">TCC: </label>
+                <input class="input-indicator" type="text" value="0.33"></input>
+              </div>
+              <div>
+                <label class="label-indicator">ATFD: </label>
+                <input class="input-indicator" value="4" type="text"></input>
+              </div>
+            </ul>
+          </li>
+          <li>
+            <a href="#"><i class="fa fa-circle-o"></i>Long Method<i class="fa fa-angle-left pull-right"></i></a>
+            <ul class="treeview-menu">
+              <div>
+                <label class="label-indicator">CC: </label>
+                <input class="input-indicator" type="text" value="4"></input>
+              </div>
+              <div>
+                <label class="label-indicator">PAR: </label>
+                <input class="input-indicator" type="text" value="4"></input>
+              </div>
+              <div>
+                <label class="label-indicator">LVAR: </label>
+                <input class="input-indicator" value="8" type="text"></input>
+              </div>
+              <div>
+                <label class="label-indicator">MLOC: </label>
+                <input class="input-indicator" value="30" type="text"></input>
+              </div>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li class="treeview">
+        <a id="sidebar-tdfilter" href="#">
+          <i class="fa fa-usd"></i> <span>Technical Debt</span>
+          <i class="fa fa-angle-left pull-right"></i>
+        </a>
+        <ul class="treeview-menu">
+          <li>
+              <div class="row" style="padding-top: 10px; padding-bottom: 10px">                
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div id="filter_code" style="height: 10px;">
+                        <a href="javascript:void(0)" ng-click="ctrl.selectDebt('CODE')" onclick="setOpacity('filter_code')">
+                          <span class="info-box-icon info-box-smaller bg-code-debt" style="margin-left: 15%;">
+                              CODE
+                          </span>
+                        </a>
+                    </div>
+                </div><!-- /.col -->
+                <div class="col-md-6 col-sm-6 col-xs-12" style="padding-left: 5px;">
+                    <div id="filter_design" style="height: 10px;">
+                        <a a href="javascript:void(0)" ng-click="ctrl.selectDebt('DESIGN')" onclick="setOpacity('filter_design')">
+                          <span class="info-box-icon info-box-smaller bg-design-debt">
+                              DESIGN
+                          </span>
+                        </a>
+                    </div>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+          </li>
+        </ul>
+      </li>
+      <li class="treeview">
+      	 <a id="sidebar-tdfilter" href="csgraphs">
+          <i class="fa fa-bar-chart"></i> <span>Code Smells</span>
+          <i class="fa fa-angle-left pull-right"></i>
+        </a>
+      </li>	
+    </ul>
+     <div class="form-group" style="padding:10px; padding-top: 0px;">
+        <button class="btn bg-olive btn-flat btn-filter-analyze sidebar-form" ng-click="ctrl.analyzeDebts()">ANALYZE</button>
+      </div>
+  </section>
+  <!-- /.sidebar -->
+</aside>
+
+<script type="text/javascript">
+  function setOpacity(id){
+        var opacity = document.getElementById(id).style.opacity;
+        if(opacity=="1" || opacity=="")
+            document.getElementById(id).style.opacity = "0.2";
+        else
+            document.getElementById(id).style.opacity = "1";
+  }
+</script>

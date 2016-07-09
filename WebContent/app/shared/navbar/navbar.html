@@ -1,0 +1,29 @@
+<script type="text/javascript">
+ $(document).ready(function(){   
+	 $('a.sidebar-toggle').on('click', function(){
+		 if ($('body').hasClass('sidebar-collapse')){
+			 $('body').removeClass('sidebar-collapse');
+		 } else {
+			 $('body').addClass('sidebar-collapse'); 
+		 }
+		});
+  });
+</script>
+
+<header class="main-header">
+        <!-- Logo -->
+        <a href="tdevolution" ng-click="ctrl.selectView('tdevolution')" class="logo">
+          <!-- mini logo for sidebar mini 50x50 pixels -->
+          <span class="logo-mini"><b>VMTD</b></span>
+          <!-- logo for regular state and mobile devices -->
+          <span class="logo-lg"><b>Visminer TD</b></span>
+        </a>
+        <!-- Header Navbar: style can be found in header.less -->
+        <nav class="navbar navbar-static-top" role="navigation">
+          <!-- Sidebar toggle button-->
+          <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+          </a>
+          <button onclick="$('#minerModal').modal('show')" class="btn bg-orange btn-flat btn-miner pull-right">Mine Repository</button>
+        </nav>
+</header>
