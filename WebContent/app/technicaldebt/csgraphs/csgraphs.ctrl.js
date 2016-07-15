@@ -24,8 +24,12 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 	
 	//JSON to format God Class in d3.js pattern
 	$scope.godClass = {
-			tagVersion: null,
-			packages: []};
+			name: null,
+			children: []};
+	
+	$scope.longMethod = {
+			name: null,
+			children: []};
 	
 	
 	$scope.filtered.repository = sidebarService.getRepository();
@@ -65,35 +69,50 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 		
 			packages=removeRepeated(packages);
 			
-			$scope.godClass.tagVersion = tagId;
+			$scope.godClass.name = tagId;
 			for(var i = 0; i<packages.length;i++){
-				$scope.godClass.packages[i] = {};
-				$scope.godClass.packages[i]['name']={};
-				$scope.godClass.packages[i].name = packages[i];
-				$scope.godClass.packages[i]['classes'] = [];
+				$scope.godClass.children[i] = {};
+				$scope.godClass.children[i]['name']={};
+				$scope.godClass.children[i].name = packages[i];
+				$scope.godClass.children[i]['children'] = [];
 				var k = 0;
 				for(var j=0;j<data.length;j++){
-					if($scope.godClass.packages[i].name == data[j].package &&
+					if($scope.godClass.children[i].name == data[j].package &&
 							data[j].abstract_types.length>0){
 						/*console.log("class ",j,": ",data[j].abstract_types[0].name,"pac ",i,
 								": ",$scope.godClass.packages[i].name);*/
-						$scope.godClass.packages[i].classes[k] = {};
-						$scope.godClass.packages[i].classes[k]['name'] = {};
-						$scope.godClass.packages[i].classes[k]['hasCodeSmell'] = {};
-						$scope.godClass.packages[i].classes[k]['metrics'] = [{"name":"ATFD", "value":null},
-						                                                     {"name":"WMC", "value":null},
-						                                                     {"name":"TCC", "value":null}];
+						$scope.godClass.children[i].children[k] = {};
+						$scope.godClass.children[i].children[k]['name'] = {};
+						$scope.godClass.children[i].children[k]['hasCodeSmell'] = {};
+						$scope.godClass.children[i].children[k]['children'] = [{"name":"ATFD", "size":null},
+						                                                     {"name":"WMC", "size":null},
+						                                                     {"name":"TCC", "size":null},
+						                                                     {"name":"NOA", "size":null}];
 						
-						$scope.godClass.packages[i].classes[k].name = data[j].abstract_types[0].name;
+						$scope.godClass.children[i].children[k].name = data[j].abstract_types[0].name;
 						
-						//ATFD
-						$scope.godClass.packages[i].classes[k].metrics[0].value = data[j].abstract_types[0].metrics[2].accumulated;
-						//WMC
-						$scope.godClass.packages[i].classes[k].metrics[1].value = data[j].abstract_types[0].metrics[3].accumulated;;
-						//TCC
-						$scope.godClass.packages[i].classes[k].metrics[2].value = data[j].abstract_types[0].metrics[4].accumulated;;
+						for(var n=0; n<data[j].abstract_types[0].metrics.length; n++){
+							var metric = data[j].abstract_types[0].metrics[n];
+							if(metric.name == "ATFD"){
+								$scope.godClass.children[i].children[k].children[0].name = "ATFD : "+metric.accumulated;
+								$scope.godClass.children[i].children[k].children[0].size = metric.accumulated;
+							}else if(metric.name == "WMC"){
+								$scope.godClass.children[i].children[k].children[1].name = "WMC : "+metric.accumulated;
+								$scope.godClass.children[i].children[k].children[1].size = metric.accumulated; 
+							}else if(metric.name == "TCC"){
+								$scope.godClass.children[i].children[k].children[2].name = "TCC : "+metric.accumulated;
+								$scope.godClass.children[i].children[k].children[2].size = metric.accumulated;
+							}else if(metric.name == "NOA"){
+								$scope.godClass.children[i].children[k].children[3].name = "NOA : "+metric.accumulated;
+								$scope.godClass.children[i].children[k].children[3].size = metric.accumulated;
+							}
+						}
 						
-						$scope.godClass.packages[i].classes[k].hasCodeSmell = data[j].abstract_types[0].codesmells[0].value;
+						for(var n=0; n<data[j].abstract_types[0].codesmells.length; n++){
+							var codeSmell = data[j].abstract_types[0].codesmells[n];
+							if(codeSmell.name == "God Class")
+								$scope.godClass.children[i].children[k].hasCodeSmell = codeSmell.value;
+						}
 						
 						k++;
 					}
@@ -101,6 +120,116 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 			}
 		
 			console.log("PACOTE: ",JSON.stringify($scope.godClass));
+			updateChart($scope.godClass);
+			
+		});
+	}
+	
+	thisCtrl.getLongMethod = function(tagId,codeSmellId){
+		console.log('Tag ID:',tagId,' Code Smell ID',codeSmellId);
+			
+		$http.get('TypeServlet', {params:{"action": "getAllByTree", "treeId": tagId}})
+		.success(function(data){
+			
+			console.log('data size: ',data.length);
+			var packages = [];
+			
+			for(var i=0;i<data.length;i++){
+				//TODO check if doesn't exist codesmell in server
+				if(data[i].abstract_types.length > 0){
+					packages.push(data[i].package);
+				}
+			}
+		
+			packages=removeRepeated(packages);
+			
+			$scope.longMethod.name = tagId;
+			for(var i = 0; i<packages.length;i++){
+				$scope.longMethod.children[i] = {};
+				$scope.longMethod.children[i]['name']={};
+				$scope.longMethod.children[i].name = packages[i];
+				$scope.longMethod.children[i]['children'] = [];
+				var k = 0;
+				for(var j=0;j<data.length;j++){
+					if($scope.longMethod.children[i].name == data[j].package &&
+							data[j].abstract_types.length>0){
+						/*console.log("class ",j,": ",data[j].abstract_types[0].name,"pac ",i,
+								": ",$scope.godClass.packages[i].name);*/
+						$scope.longMethod.children[i].children[k] = {};
+						$scope.longMethod.children[i].children[k]['name'] = {};
+						$scope.longMethod.children[i].children[k]['children'] = [];
+						
+						$scope.longMethod.children[i].children[k].name = data[j].abstract_types[0].name;
+						
+						var methodsNames = []
+						
+						for(var n=0; n<data[j].abstract_types[0].metrics.length; n++){
+							var metric = data[j].abstract_types[0].metrics[n];
+							if(metric.name == "CC"){
+								for(var x=0; x< metric.methods.length; x++){
+									methodsNames.push(metric.methods[x].method);
+								}
+							}
+						}
+						
+						for(var n=0; n<methodsNames.length; n++){
+							var methodName = methodsNames[n]
+							$scope.longMethod.children[i].children[k].children[n] = {};
+							$scope.longMethod.children[i].children[k].children[n]['name'] = methodName;
+							$scope.longMethod.children[i].children[k].children[n]['hasCodeSmell'] = {};
+							$scope.longMethod.children[i].children[k].children[n]['children'] = [];
+							
+							for(var x=0; x<data[j].abstract_types[0].metrics.length; x++){
+								var metric = data[j].abstract_types[0].metrics[x];
+								if(metric.name == "CC"){
+									for(var y=0; y<metric.methods.length; y ++){
+										var method = metric.methods[y];
+										if(method.method == methodName)
+											$scope.longMethod.children[i].children[k].children[n].children.push({"name":"CC : "+method.value, "size":method.value});
+									}
+								}else if(metric.name == "MLOC"){
+									for(var y=0; y<metric.methods.length; y ++){
+										var method = metric.methods[y];
+										if(method.method == methodName)
+											$scope.longMethod.children[i].children[k].children[n].children.push({"name":"MLOC : "+method.value, "size":method.value});
+									}
+								}else if(metric.name == "PAR"){
+									for(var y=0; y<metric.methods.length; y ++){
+										var method = metric.methods[y];
+										if(method.method == methodName)
+											$scope.longMethod.children[i].children[k].children[n].children.push({"name":"PAR : "+method.value, "size":method.value});
+									}
+								}else if(metric.name == "LVAR"){
+									for(var y=0; y<metric.methods.length; y ++){
+										var method = metric.methods[y];
+										if(method.method == methodName)
+											$scope.longMethod.children[i].children[k].children[n].children.push({"name":"LVAR : "+method.value, "size":method.value});
+									}
+								}
+								
+							}
+							
+							for(var x=0; x<data[j].abstract_types[0].codesmells.length; x++){
+								var codeSmell = data[j].abstract_types[0].codesmells[x];
+								if(codeSmell.name == "Long Method"){
+									for(var y = 0; y<codeSmell.methods.length; y++){
+										var method = codeSmell.methods[y];
+										if(method.method == methodName)
+											$scope.longMethod.children[i].children[k].children[n].hasCodeSmell = method.value;
+									}	
+									
+								}
+							}
+							
+						}
+						
+						k++;
+					}
+				}
+			}
+		
+			console.log("PACOTE: ",JSON.stringify($scope.longMethod));
+			updateChart($scope.longMethod);
 			
 		});
 	}
@@ -108,7 +237,10 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 	$scope.getCodeSmell = function(){
 		if($scope.filtered.selTagId!=null && $scope.filtered.selCSId!=null){
 			//TODO check id from code smell and call its get method
-			thisCtrl.getGodClass($scope.filtered.selTagId,$scope.filtered.selCSId);
+			if($scope.filtered.selCSId == 0)
+				thisCtrl.getGodClass($scope.filtered.selTagId,$scope.filtered.selCSId);
+			else if($scope.filtered.selCSId == 1)
+				thisCtrl.getLongMethod($scope.filtered.selTagId,$scope.filtered.selCSId);
 		} else {
 			alert("Select one tag and one code smell!");
 		}
