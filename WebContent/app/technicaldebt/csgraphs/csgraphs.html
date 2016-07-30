@@ -28,19 +28,31 @@
 </style>
 <div id="csgraphs">
 	<div class="content" ng-show="filtered.repository!=null">
-		<form ng-submit="getCodeSmell()">
-			<label for="listTags">Tags: </label>
-			<select name="listTags" ng-model="filtered.selTagId">
-				<option ng-repeat="tag in filtered.tags" value="{{tag._id}}">{{tag.name}}</option>	
-			</select>
+		<div class="form-group">
+			<form ng-submit="getCodeSmell()">
+				<div class="col-md-1" style="margin-right:-20px;">
+					<label style="vertical-align:sub;" for="listTags">Tags: </label>
+				</div>
+				<div class="col-md-2">
+					<select class="form-control" name="listTags" ng-model="filtered.selTagId">
+						<option ng-repeat="tag in filtered.tags" value="{{tag._id}}">{{tag.name}}</option>	
+					</select>
+				</div>
+				<div class="col-md-2" style="margin-right:-100px;">
+					<label style="vertical-align:sub;" for="listCodeSmells">Code Smells:</label>
+				</div>
+				<div class="col-md-3">
+					<select class="form-control" name="listCodeSmells" ng-model="filtered.selCSId">
+						<option ng-repeat="cs in filtered.codeSmells" value="{{cs.id}}">{{cs.name}}</option>
+					</select>
+				</div>
+				<div class="col-md-4">
+					<input type="checkbox" ng-model="filtered.affectedOnly">Only affected objects
 			
-			<label for="listCodeSmells">Code Smells:</label>
-			<select name="listCodeSmells" ng-model="filtered.selCSId">
-				<option ng-repeat="cs in filtered.codeSmells" value="{{cs.id}}">{{cs.name}}</option>
-			</select>
-	
-			<input type="submit" value="Send">	
-		</form>
+					<input type="submit" style="margin-left:20px;" class="btn btn-primary" value="Send">	
+				</div>
+			</form>
+		</div>
 		<div id="d3Chart"></div>
 		
 		<!-- Show JSON from code smell selected -->
@@ -57,10 +69,8 @@
 		    	
 			    function updateChart(root){
 			    	
-			    	$("#d3Chart").empty();
-				    	
 			    	var margin = 20,
-			        diameter = 960;
+			        diameter = 940;
 					
 				    var color = d3.scale.linear()
 				        .domain([-1, 5])
@@ -86,7 +96,7 @@
 			          .data(nodes)
 			          .enter().append("circle")
 			          .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
-			          .style("fill", function(d) { return d.children ? color(d.depth) : null; })
+			          .style("fill", function(d) { return d.hasCodeSmell !== undefined && d.hasCodeSmell ? "#dd4b39" : d.children ? color(d.depth) : null; })
 			          .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
 	
 			      var text = svg.selectAll("text")

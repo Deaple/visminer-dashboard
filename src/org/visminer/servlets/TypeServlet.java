@@ -15,11 +15,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.repositoryminer.persistence.handler.CommitAnalysisDocumentHandler;
+import org.repositoryminer.persistence.handler.ReferenceDocumentHandler;
 
 @WebServlet("/TypeServlet")
 public class TypeServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private CommitAnalysisDocumentHandler typeHandler = new CommitAnalysisDocumentHandler();
+	private ReferenceDocumentHandler referenceHandler = new ReferenceDocumentHandler();
 	private PrintWriter out;
        
     public TypeServlet() {
@@ -64,6 +66,8 @@ public class TypeServlet extends HttpServlet {
 				break;	
 			case "getTypeTimeline":
 				getTypeTimeline(request.getParameter("idRepository"), request.getParameter("fileHash"));
+			case "getAllByTagAndCodeSmell":
+				getAllByTagAndCodeSmell(request.getParameter("tagId"), request.getParameter("codeSmell"));
 			default:
 				break;
 		}
@@ -72,6 +76,16 @@ public class TypeServlet extends HttpServlet {
 	private void getAllByTree(String treeId) {
 		List<String> typeList = new ArrayList<>();
 		typeHandler.getAllByTree(treeId)
+			.forEach(type->typeList.add(type.toJson()));
+		out.println(typeList);
+	}
+	
+	private void getAllByTagAndCodeSmell(String tag, String codeSmell){
+		Document tagDoc = referenceHandler.findById(tag, null);
+		@SuppressWarnings("unchecked")
+		List<String> commits = (List<String>) tagDoc.get("commits");
+		List<String> typeList = new ArrayList<String>();
+		typeHandler.getAllByCommitsAndCodeSmell(commits, codeSmell)
 			.forEach(type->typeList.add(type.toJson()));
 		out.println(typeList);
 	}
