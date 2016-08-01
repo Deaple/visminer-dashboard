@@ -48,10 +48,6 @@ public class Crawler {
 		repository.setMetrics(metrics);
 		repository.setCodeSmells(codeSmells);
 		repository.setParsers(new JavaParser());
-		// setup lang
-		//List<LanguageType> langs = new ArrayList<LanguageType>();
-		//langs.add(LanguageType.JAVA);		
-		// mine it!
 		miner.setRepositories(repository);
 		miner.mine();
 	}
