@@ -1,6 +1,6 @@
 homeApp = angular.module('homeApp');
 
-homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSmellsDetailsService){
+homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService){
 	
 	var removeRepeated = function(pack){
 		return Array.from(new Set(pack));
@@ -15,12 +15,17 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 			selTagId: null,
 			selCSId: null,
 			codeSmells: [
-	             {id:'0',name:'God Class'}, 
-	             {id:'1',name:'Long Method'}, 
-	             {id:'2',name:'Brain Class'},
-	             {id:'3',name:'Brain Method'},
-	             {id:'4',name:'Complex Method'}
+	             {id:0,name:'God Class'}, 
+	             {id:1,name:'Long Method'}, 
+	             {id:2,name:'Brain Class'},
+	             {id:3,name:'Brain Method'},
+	             {id:4,name:'Complex Method'}
 	             ],
+	        selGrap: null,
+ 			graphType: [
+			     {id:0,name:'Treemap'},
+			     {id:1,name:'Circle Pack'}
+ 				 ],     
 			tags: [],
 			affectedOnly:false
 	};
@@ -48,9 +53,7 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 	
 	
 	$scope.filtered.repository = sidebarService.getRepository();
-	
-	
-	
+
 	thisCtrl.tagsLoad = function(repositoryId) { 
 		console.log('tagsLoad=', repositoryId);
 
@@ -70,9 +73,11 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 		console.log('Tag ID:',tagId,' Code Smell ID',codeSmell);
 			
 		$http.get('TypeServlet', {params:{"action": "getAllByTagAndCodeSmell", "tagId": tagId, "codeSmell": codeSmell}})
+		//$http.get('TypeServlet', {params:{"action": "getAllByTree", "treeId": tagId}})
 		.success(function(data){
 			
 			console.log('data size: ',data.length);
+			
 			var packages = [];
 			
 			for(var i=0;i<data.length;i++){
@@ -92,10 +97,8 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 				$scope.godClass.children[i]['children'] = [];
 				var k = 0;
 				for(var j=0;j<data.length;j++){
-					if($scope.godClass.children[i].name == data[j].package &&
-							data[j].abstract_types.length>0){
-						/*console.log("class ",j,": ",data[j].abstract_types[0].name,"pac ",i,
-								": ",$scope.godClass.packages[i].name);*/
+					if($scope.godClass.children[i].name == data[j].package && data[j].abstract_types.length>0){
+						
 						$scope.godClass.children[i].children[k] = {};
 						$scope.godClass.children[i].children[k]['name'] = {};
 						$scope.godClass.children[i].children[k]['hasCodeSmell'] = {};
@@ -128,7 +131,6 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 							if(codeSmell.name == "God Class")
 								$scope.godClass.children[i].children[k].hasCodeSmell = codeSmell.value;
 						}
-						
 						k++;
 					}
 				}
@@ -137,10 +139,16 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 				$scope.godClass.children[i].children = $scope.godClass.children[i].children.filter(hasChildren);
 				
 			}
+			
+			for(var i=0;i<$scope.godClass.children.length;i++){
+				//console.log("nome: ",$scope.godClass.children[i].name);
+				$scope.godClass.children[i].children = removeRepeated($scope.godClass.children[i].children);
+			}
 		
-			console.log("PACOTE: ",JSON.stringify($scope.godClass));
-			if($scope.godClass.children.length!=0)
-				updateChart($scope.godClass);
+			//console.log("PACOTE: ",JSON.stringify($scope.godClass));
+			if($scope.godClass.children.length!=0){
+				updateChart($scope.godClass,$scope.filtered.selGrap);
+			}	
 			else
 				alert("No God Classes detected.");
 			
@@ -262,9 +270,9 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 			//removing packages that contain no classes
 			$scope.longMethod.children = $scope.longMethod.children.filter(hasChildren);
 		
-			console.log("PACOTE: ",JSON.stringify($scope.longMethod));
+			//console.log("PACOTE: ",JSON.stringify($scope.longMethod));
 			if($scope.longMethod.children.length!=0)
-				updateChart($scope.longMethod);
+				updateChart($scope.longMethod,$scope.filtered.selGrap);
 			else
 				alert("No Long Methods detected.");
 		});
@@ -338,9 +346,9 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 				
 			}
 		
-			console.log("PACOTE: ",JSON.stringify($scope.brainClass));
+			//console.log("PACOTE: ",JSON.stringify($scope.brainClass));
 			if($scope.brainClass.children.length!=0)
-				updateChart($scope.brainClass);
+				updateChart($scope.brainClass,$scope.filtered.selGrap);
 			else
 				alert("No Brain Classes detected.");
 			
@@ -372,10 +380,7 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 				$scope.brainMethod.children[i]['children'] = [];
 				var k = 0;
 				for(var j=0;j<data.length;j++){
-					if($scope.brainMethod.children[i].name == data[j].package &&
-							data[j].abstract_types.length>0){
-						/*console.log("class ",j,": ",data[j].abstract_types[0].name,"pac ",i,
-								": ",$scope.godClass.packages[i].name);*/
+					if($scope.brainMethod.children[i].name == data[j].package && data[j].abstract_types.length>0){
 						$scope.brainMethod.children[i].children[k] = {};
 						$scope.brainMethod.children[i].children[k]['name'] = {};
 						$scope.brainMethod.children[i].children[k]['children'] = [];
@@ -462,9 +467,9 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 			//removing packages that contain no classes
 			$scope.brainMethod.children = $scope.brainMethod.children.filter(hasChildren);
 		
-			console.log("PACOTE: ",JSON.stringify($scope.brainMethod));
+			//console.log("PACOTE: ",JSON.stringify($scope.brainMethod));
 			if($scope.brainMethod.children.length!=0)
-				updateChart($scope.brainMethod);
+				updateChart($scope.brainMethod,$scope.filtered.selGrap);
 			else
 				alert("No Brain Methods detected.");
 		});
@@ -568,29 +573,30 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService,typeSm
 			//removing packages that contain no classes
 			$scope.complexMethod.children = $scope.complexMethod.children.filter(hasChildren);
 		
-			console.log("PACOTE: ",JSON.stringify($scope.complexMethod));
+			//console.log("PACOTE: ",JSON.stringify($scope.complexMethod));
 			if($scope.complexMethod.children.length!=0)
-				updateChart($scope.complexMethod);
+				updateChart($scope.complexMethod,$scope.filtered.selGrap);
 			else
 				alert("No Complex Methods detected.");
 		});
 	}
 	
 	$scope.getCodeSmell = function(){
-		if($scope.filtered.selTagId!=null && $scope.filtered.selCSId!=null){
+		
+		if($scope.filtered.selTagId!=null && $scope.filtered.selCSId!=null && $scope.filtered.selGrap!=null){
 			$("#d3Chart").empty();
 			if($scope.filtered.selCSId == 0)
 				thisCtrl.getGodClass($scope.filtered.selTagId, $scope.filtered.affectedOnly ? 'God Class' : null);
 			else if($scope.filtered.selCSId == 1)
-				thisCtrl.getLongMethod($scope.filtered.selTagId, $scope.filtered.affectedOnly);
+				thisCtrl.getLongMethod($scope.filtered.selTagId, $scope.filtered.affectedOnly ? 'Long Method' : null);
 			else if($scope.filtered.selCSId == 2)
 				thisCtrl.getBrainClass($scope.filtered.selTagId, $scope.filtered.affectedOnly ? 'Brain Class' : null);
 			else if($scope.filtered.selCSId == 3)
-				thisCtrl.getBrainMethod($scope.filtered.selTagId, $scope.filtered.affectedOnly);
+				thisCtrl.getBrainMethod($scope.filtered.selTagId, $scope.filtered.affectedOnly ? 'Brain Method' : null);
 			else if($scope.filtered.selCSId == 4)
-				thisCtrl.getComplexMethod($scope.filtered.selTagId, $scope.filtered.affectedOnly);
+				thisCtrl.getComplexMethod($scope.filtered.selTagId, $scope.filtered.affectedOnly ? 'Complex Method' : null);
 		} else {
-			alert("Select one tag and one code smell!");
+			alert("Select one tag, one code smell and a graph type!");
 		}
 	}
 	
