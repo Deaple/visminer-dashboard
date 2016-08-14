@@ -24,7 +24,11 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService){
 	        selGrap: null,
  			graphType: [
 			     {id:0,name:'Treemap'},
-			     {id:1,name:'Circle Pack'}
+			     {id:1,name:'Zoomable Circle Pack'},
+			     {id:2,name:'Bubble Chart'},
+			     {id:3,name:'Collapsible Force Layout'},
+			     {id:4,name:'Radial Reingold'},
+			     {id:5,name:'Sunburst'}
  				 ],     
 			tags: [],
 			affectedOnly:false
@@ -147,6 +151,7 @@ homeApp.controller('CSgraphsCtrl', function($scope, $http, sidebarService){
 		
 			//console.log("PACOTE: ",JSON.stringify($scope.godClass));
 			if($scope.godClass.children.length!=0){
+				console.log(JSON.stringify($scope.godClass));
 				updateChart($scope.godClass,$scope.filtered.selGrap);
 			}	
 			else

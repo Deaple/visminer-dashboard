@@ -1,14 +1,9 @@
 
 <style>
 
-/* css for Circle Pack */
+/* css for Zoomable Circle Pack */
 .node {
    cursor: pointer; 
- } 
-
- .node:hover { 
-   stroke: #000; 
-   stroke-width: 1.5px; 
  } 
 
  .node--leaf { 
@@ -44,6 +39,52 @@
   position: absolute;
   text-indent: 2px;
 }
+
+/*css for Bubble Chart */
+
+
+/* collapse */
+
+.node circle {
+  cursor: pointer;
+  stroke: #3182bd;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  font: 10px sans-serif;
+  pointer-events: none;
+  text-anchor: middle;
+}
+
+line.link {
+  fill: none;
+  stroke: #9ecae1;
+  stroke-width: 1.5px;
+}
+/* radial */
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+/* Sunburst */
+
+
+
+
 </style>
 
 <div id="csgraphs">
@@ -83,7 +124,14 @@
 			</form>
 		</div>
 		
-		<div ng-show="filtered.selGrap!=null && filtered.selCSId!=null && filtered.selTagId!=null" id="d3Chart"></div>
+		<div id="d3Chart"></div>
+		
+		<div ng-if="filtered.selGrap==0">
+		<form>
+    		<label><input type="radio" name="mode" value="size" checked> Size</label>
+    		<label><input type="radio" name="mode" value="count"> Count</label>
+		</form>
+		</div>
 
     	<script>
     		//Treemap Graph
@@ -133,10 +181,18 @@
 			    	      .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
 			    	}
 			    	
+			    	
+			    	function resize(){
+			    		
+			    	}
+			    	
+			    	d3.select(window).on('resize', resize); 
+
+			    	
 	    		} 
 	    		
 	    	//CirclePack Graph
-	    	function circlePackChart(root) {	  
+	    	function zoomCirclePackChart(root) {	  
 		    	  var margin = 20,
 		          diameter = 940;
 				
@@ -207,15 +263,291 @@
 			      }
 		
 			      d3.select(self.frameElement).style("height", diameter + "px");
+			    	
+			      //d3.select(window).on('resize', resize);
+	    	} 
+	    	
+	    	function bubbleChart(root){
+	    		var diameter = 960,
+	    	    format = d3.format(",d"),
+	    	    color = d3.scale.category20c();
+	
+		    	var bubble = d3.layout.pack()
+		    	    .sort(null)
+		    	    .size([diameter, diameter])
+		    	    .padding(1.5);
+	
+		    	var svg = d3.select("#d3Chart").append("svg")
+		    	    .attr("width", diameter)
+		    	    .attr("height", diameter)
+		    	    .attr("class", "bubble");
+	
+	
+		    	var node = svg.selectAll(".node")
+		    	      .data(bubble.nodes(classes(root))
+		    	      .filter(function(d) { return !d.children; }))
+		    	    .enter().append("g")
+		    	      .attr("class", "node")
+		    	      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+	
+		    	  node.append("title")
+		    	      .text(function(d) { return d.className + ": " + format(d.value); });
+	
+		    	  node.append("circle")
+		    	      .attr("r", function(d) { return d.r; })
+		    	      .style("fill", function(d) { return color(d.packageName); });
+	
+		    	  node.append("text")
+		    	      .attr("dy", ".3em")
+		    	      .style("text-anchor", "middle")
+		    	      .text(function(d) { return d.className.substring(0, d.r / 3); });
+	
+		    	// Returns a flattened hierarchy containing all leaf nodes under the root.
+		    	function classes(root) {
+		    	  var classes = [];
+	
+		    	  function recurse(name, node) {
+		    	    if (node.children) node.children.forEach(function(child) { recurse(node.name, child); });
+		    	    else classes.push({packageName: name, className: node.name, value: node.size});
+		    	  }
+	
+		    	  recurse(null, root);
+		    	  return {children: classes};
+		    	}
+	
+		    	d3.select(self.frameElement).style("height", diameter + "px");	
+	    	}
+	    	
+	    	function collapsibleForce(root){
+
+	    		var width = 960,
+	    		    height = 500,
+	    		    root;
+
+	    		var force = d3.layout.force()
+	    		    .linkDistance(80)
+	    		    .charge(-120)
+	    		    .gravity(.05)
+	    		    .size([width, height])
+	    		    .on("tick", tick);
+
+	    		var svg = d3.select("#d3Chart").append("svg")
+	    		    .attr("width", width)
+	    		    .attr("height", height);
+
+	    		var link = svg.selectAll(".link"),
+	    		    node = svg.selectAll(".node");
+
+	    		//d3.json("graph.json", function(error, json) {
+	    		//  if (error) throw error;
+	    		  update();
+	    		//});
+
+	    		function update() {
+	    		  var nodes = flatten(root),
+	    		      links = d3.layout.tree().links(nodes);
+
+	    		  // Restart the force layout.
+	    		  force
+	    		      .nodes(nodes)
+	    		      .links(links)
+	    		      .start();
+
+	    		  // Update links.
+	    		  link = link.data(links, function(d) { return d.target.id; });
+
+	    		  link.exit().remove();
+
+	    		  link.enter().insert("line", ".node")
+	    		      .attr("class", "link");
+
+	    		  // Update nodes.
+	    		  node = node.data(nodes, function(d) { return d.id; });
+
+	    		  node.exit().remove();
+
+	    		  var nodeEnter = node.enter().append("g")
+	    		      .attr("class", "node")
+	    		      .on("click", click)
+	    		      .call(force.drag);
+
+	    		  nodeEnter.append("circle")
+	    		      .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; });
+
+	    		  nodeEnter.append("text")
+	    		      .attr("dy", ".35em")
+	    		      .text(function(d) { return d.name; });
+
+	    		  node.select("circle")
+	    		      .style("fill", color);
+	    		}
+
+	    		function tick() {
+	    		  link.attr("x1", function(d) { return d.source.x; })
+	    		      .attr("y1", function(d) { return d.source.y; })
+	    		      .attr("x2", function(d) { return d.target.x; })
+	    		      .attr("y2", function(d) { return d.target.y; });
+
+	    		  node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+	    		}
+
+	    		function color(d) {
+	    		  return d._children ? "#3182bd" // collapsed package
+	    		      : d.children ? "#c6dbef" // expanded package
+	    		      : "#fd8d3c"; // leaf node
+	    		}
+
+	    		// Toggle children on click.
+	    		function click(d) {
+	    		  if (d3.event.defaultPrevented) return; // ignore drag
+	    		  if (d.children) {
+	    		    d._children = d.children;
+	    		    d.children = null;
+	    		  } else {
+	    		    d.children = d._children;
+	    		    d._children = null;
+	    		  }
+	    		  update();
+	    		}
+
+	    		// Returns a list of all nodes under the root.
+	    		function flatten(root) {
+	    		  var nodes = [], i = 0;
+
+	    		  function recurse(node) {
+	    		    if (node.children) node.children.forEach(recurse);
+	    		    if (!node.id) node.id = ++i;
+	    		    nodes.push(node);
+	    		  }
+
+	    		  recurse(root);
+	    		  return nodes;
+	    		}
+	    	}
+	    	
+	    	function radialReingold(root){
+	    		var diameter = 960;
+
+	    		var tree = d3.layout.tree()
+	    		    .size([360, diameter / 2 - 120])
+	    		    .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+	    		var diagonal = d3.svg.diagonal.radial()
+	    		    .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
+
+	    		var svg = d3.select("#d3Chart").append("svg")
+	    		    .attr("width", diameter)
+	    		    .attr("height", diameter - 150)
+	    		  .append("g")
+	    		    .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+
+	    		  var nodes = tree.nodes(root),
+	    		      links = tree.links(nodes);
+
+	    		  var link = svg.selectAll(".link")
+	    		      .data(links)
+	    		    .enter().append("path")
+	    		      .attr("class", "link")
+	    		      .attr("d", diagonal);
+
+	    		  var node = svg.selectAll(".node")
+	    		      .data(nodes)
+	    		    .enter().append("g")
+	    		      .attr("class", "node")
+	    		      .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+
+	    		  node.append("circle")
+	    		      .attr("r", 4.5);
+
+	    		  node.append("text")
+	    		      .attr("dy", ".31em")
+	    		      .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+	    		      .attr("transform", function(d) { return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
+	    		      .text(function(d) { return d.name; });
+
+	    		d3.select(self.frameElement).style("height", diameter - 150 + "px");
+	    	}
+	    	
+	    	function sunburst(root){
+
+	    		var width = 960,
+	    		    height = 700,
+	    		    radius = Math.min(width, height) / 2,
+	    		    color = d3.scale.category20c();
+
+	    		var svg = d3.select("#d3Chart").append("svg")
+	    		    .attr("width", width)
+	    		    .attr("height", height)
+	    		  .append("g")
+	    		    .attr("transform", "translate(" + width / 2 + "," + height * .52 + ")");
+
+	    		var partition = d3.layout.partition()
+	    		    .sort(null)
+	    		    .size([2 * Math.PI, radius * radius])
+	    		    .value(function(d) { return 1; });
+
+	    		var arc = d3.svg.arc()
+	    		    .startAngle(function(d) { return d.x; })
+	    		    .endAngle(function(d) { return d.x + d.dx; })
+	    		    .innerRadius(function(d) { return Math.sqrt(d.y); })
+	    		    .outerRadius(function(d) { return Math.sqrt(d.y + d.dy); });
+
+	    		  var path = svg.datum(root).selectAll("path")
+	    		      .data(partition.nodes)
+	    		    .enter().append("path")
+	    		      .attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
+	    		      .attr("d", arc)
+	    		      .style("stroke", "#fff")
+	    		      .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
+	    		      .style("fill-rule", "evenodd")
+	    		      .each(stash);
+
+	    		  d3.selectAll("input").on("change", function change() {
+	    		    var value = this.value === "count"
+	    		        ? function() { return 1; }
+	    		        : function(d) { return d.size; };
+
+	    		    path
+	    		        .data(partition.value(value).nodes)
+	    		      .transition()
+	    		        .duration(1500)
+	    		        .attrTween("d", arcTween);
+	    		  });
+
+	    		// Stash the old values for transition.
+	    		function stash(d) {
+	    		  d.x0 = d.x;
+	    		  d.dx0 = d.dx;
+	    		}
+
+	    		// Interpolate the arcs in data space.
+	    		function arcTween(a) {
+	    		  var i = d3.interpolate({x: a.x0, dx: a.dx0}, a);
+	    		  return function(t) {
+	    		    var b = i(t);
+	    		    a.x0 = b.x;
+	    		    a.dx0 = b.dx;
+	    		    return arc(b);
+	    		  };
+	    		}
+
+	    		d3.select(self.frameElement).style("height", height + "px");
 	    	}
 	    		
 	    	function updateChart(root, graphType){
 	    		if(graphType==0){
 	    			treemapChart(root);
-	    		}	
-	    		else {
-	    			circlePackChart(root);
-	    		}
+	    		} else if(graphType==1){
+	    			zoomCirclePackChart(root);
+	    		} else if(graphType==2){
+	    			bubbleChart(root);
+	    		} else if(graphType==3) {
+	    			collapsibleForce(root);
+	    		} else if(graphType==4){
+	    			radialReingold(root);
+	    		} else {
+	    			sunburst(root);
+	    		} 
 	    	}
     	</script>
 
