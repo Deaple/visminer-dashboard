@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -80,12 +82,9 @@ public class TypeServlet extends HttpServlet {
 		out.println(typeList);
 	}
 	
-	private void getAllByTagAndCodeSmell(String tag, String codeSmell){
-		Document tagDoc = referenceHandler.findById(tag, null);
-		@SuppressWarnings("unchecked")
-		List<String> commits = (List<String>) tagDoc.get("commits");
-		List<String> typeList = new ArrayList<String>();
-		typeHandler.getAllByCommitsAndCodeSmell(commits, codeSmell)
+	private void getAllByTagAndCodeSmell(String tagId, String codeSmell){
+		List<String> typeList = new ArrayList<>();
+		typeHandler.getAllByTagAndCodeSmell(tagId, codeSmell)
 			.forEach(type->typeList.add(type.toJson()));
 		out.println(typeList);
 	}
